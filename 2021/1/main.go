@@ -28,9 +28,24 @@ func readFromFile() []int {
 func main() {
 	input := readFromFile()
 
+	// part 1
 	count := 0
 	for i := 1; i < len(input); i++ {
 		if input[i] > input[i-1] {
+			count++
+		}
+	}
+	log.Print(count)
+
+	// part 2
+	count = 0
+	previous_window_sum := 0
+	current_window_sum := 0
+	for i := 3; i < len(input); i++ {
+		previous_window_sum = input[i-1] + input[i-2] + input[i-3]
+		current_window_sum = input[i] + input[i-1] + input[i-2]
+
+		if current_window_sum > previous_window_sum {
 			count++
 		}
 	}
