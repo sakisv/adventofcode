@@ -26,11 +26,11 @@ func readFromFile() []int {
 }
 
 func main() {
-	int_slice := readFromFile()
+	input := readFromFile()
 
 	count := 0
-	for i := 1; i < len(int_slice); i++ {
-		if int_slice[i] > int_slice[i-1] {
+	for i := 1; i < len(input); i++ {
+		if input[i] > input[i-1] {
 			count++
 		}
 	}
