@@ -21,6 +21,7 @@ func main() {
 
 	depth := 0
 	horizontal := 0
+	aim := 0
 	for _, v := range input {
 		split := strings.Split(v, " ")
 		direction, count_str := split[0], split[1]
@@ -32,16 +33,18 @@ func main() {
 
 		if direction == "forward" {
 			horizontal += count
+			depth = depth + (count * aim)
 			continue
 		}
 
 		if direction == "down" {
-			depth += count
+			aim += count
 		}
 
 		if direction == "up" {
-			depth -= count
+			aim -= count
 		}
+
 	}
 	log.Print(depth * horizontal)
 }
