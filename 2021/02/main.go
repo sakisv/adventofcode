@@ -39,10 +39,12 @@ func main() {
 
 		if direction == "down" {
 			aim += count
+			continue
 		}
 
 		if direction == "up" {
 			aim -= count
+			continue
 		}
 
 	}
