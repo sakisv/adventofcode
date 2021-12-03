@@ -106,8 +106,8 @@ func main() {
 	log.Print(strings.Join(gamma_rate, ""))
 	log.Print(strings.Join(epsilon_rate, ""))
 
-	gr_decimal, _ := strconv.ParseInt(strings.Join(gamma_rate, ""), 2, 32)
-	er_decimal, _ := strconv.ParseInt(strings.Join(epsilon_rate, ""), 2, 32)
+	gr_decimal, _ := strconv.ParseInt(strings.Join(gamma_rate, ""), 2, 16)
+	er_decimal, _ := strconv.ParseInt(strings.Join(epsilon_rate, ""), 2, 16)
 	log.Print(gr_decimal)
 	log.Print(er_decimal)
 	log.Print(gr_decimal * er_decimal)
