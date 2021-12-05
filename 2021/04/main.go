@@ -122,6 +122,8 @@ func (b *Board) CalculateScore(winning_number int) int {
 
 func main() {
 	numbers_drawn, board_strings := getInput()
+	var winning_boards_map = make(map[int]int)
+	var winning_boards []int
 
 	var boards []Board
 	for _, board_string := range board_strings {
@@ -133,9 +135,11 @@ func main() {
 	log.Print(numbers_drawn)
 	log.Print(len(board_strings))
 
-	board_won := false
 	for _, number := range numbers_drawn {
 		for board_count, board := range boards {
+			if _, exists := winning_boards_map[board_count]; exists {
+				continue
+			}
 			if _, exists := board.all_numbers[number]; ! exists {
 				log.Print("Number ", number, " doesn't exist in board ", board_count, " skipping")
 				continue
@@ -145,13 +149,11 @@ func main() {
 			board.MarkNumber(number)
 
 			if board.HasCompletedColumn() || board.HasCompletedRow() {
-				board_won = true
-				log.Print(board.CalculateScore(number))
-				break
+				winning_boards_map[board_count] = board.CalculateScore(number)
+				winning_boards = append(winning_boards, board_count)
 			}
 		}
-		if board_won {
-			break
-		}
 	}
+
+	log.Print(winning_boards_map[winning_boards[len(winning_boards) - 1]])
 }
