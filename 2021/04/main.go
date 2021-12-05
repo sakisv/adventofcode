@@ -132,20 +132,15 @@ func main() {
 		boards = append(boards, board)
 	}
 
-	log.Print(numbers_drawn)
-	log.Print(len(board_strings))
-
 	for _, number := range numbers_drawn {
 		for board_count, board := range boards {
 			if _, exists := winning_boards_map[board_count]; exists {
 				continue
 			}
 			if _, exists := board.all_numbers[number]; ! exists {
-				log.Print("Number ", number, " doesn't exist in board ", board_count, " skipping")
 				continue
 			}
 
-			log.Print("Marking number ", number, " in board ", board_count)
 			board.MarkNumber(number)
 
 			if board.HasCompletedColumn() || board.HasCompletedRow() {
