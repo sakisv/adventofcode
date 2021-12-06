@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -80,6 +81,36 @@ func getHorizontalLine(y int, start, end Point) []Point {
 	return points
 }
 
+func getDiagonalLine(start, end Point) []Point {
+	var points []Point
+
+	// abs(x1-x2) == abs(y1-y2), so we only need to calculate one of them
+	diff := math.Abs(float64(start.x) - float64(end.x))
+
+	points = append(points, start)
+	for i := 0; i < int(diff); i++ {
+		newX := 0
+		newY := 0
+
+		if start.x < end.x {
+			newX = start.x + 1
+		} else {
+			newX = start.x - 1
+		}
+
+		if start.y < end.y {
+			newY = start.y + 1
+		} else {
+			newY = start.y - 1
+		}
+
+		start = Point{newX, newY}
+		points = append(points, start)
+	}
+
+	return points
+}
+
 func NewLine(input string) Line {
 	l := Line{}
 
@@ -97,10 +128,10 @@ func (l *Line) GetCoveringPoints() []Point {
 
 	if l.start.x == l.end.x {
 		return getVerticalLine(l.start.x, l.start, l.end)
-	}
-
-	if l.start.y == l.end.y {
+	} else if l.start.y == l.end.y {
 		return getHorizontalLine(l.start.y, l.start, l.end)
+	} else {
+		return getDiagonalLine(l.start, l.end)
 	}
 
 	return points
