@@ -29,29 +29,26 @@ func getInput() []int {
 func main() {
 	input := getInput()
 
-	numberOfDays := 80
+	numberOfDays := 256
 
-	for day := 0; day<numberOfDays; day++ {
-
-		newFishCount := 0
-		for i, lanternfish := range input {
-			if lanternfish > 0 {
-				input[i] -= 1
-				continue
-			}
-
-			if lanternfish == 0 {
-				input[i] = 6
-				newFishCount++
-				continue
-			}
-		}
-
-		for i := 0; i<newFishCount; i++ {
-			input = append(input, 8)
-		}
-		log.Print("Day ", day+1, " total fish: ", len(input))
+	fishDayCounts := make(map[int]int, 9)
+	for _, fishDay := range input {
+		fishDayCounts[fishDay]++
 	}
 
-	log.Print(len(input))
+	log.Print(fishDayCounts)
+	for d := 0; d < numberOfDays; d++ {
+		d0Pointer := d % 9		// this will give us a loop going between 0-8
+		d6Pointer := (d0Pointer + 7) % 9
+
+		fishDayCounts[d6Pointer] += fishDayCounts[d0Pointer]
+		//log.Print(fishDayCounts)
+	}
+
+	totalFish := 0
+	for _, v := range fishDayCounts {
+		totalFish += v
+	}
+
+	log.Print(totalFish)
 }
