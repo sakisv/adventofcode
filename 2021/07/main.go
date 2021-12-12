@@ -26,6 +26,15 @@ func getInput() []int {
 	return ret
 }
 
+func calculateStepsSum(steps int) int {
+	sum := 0
+	for i := 0; i <= steps; i++ {
+		sum += i
+	}
+
+	return sum
+}
+
 func main() {
 	input := getInput()
 	positionCount := make(map[int]int, len(input))
@@ -37,7 +46,8 @@ func main() {
 	fuelConsumption := make(map[int]int, len(input))
 	for i := 0; i < len(input); i++ {
 		for position, count := range positionCount {
-			fuelConsumption[i] += int(math.Abs(float64(position - i))) * count
+			steps := int(math.Abs(float64(position - i)))
+			fuelConsumption[i] +=  calculateStepsSum(steps) * count
 		}
 	}
 
@@ -50,7 +60,7 @@ func main() {
 		}
 	}
 
+	//log.Print(fuelConsumption)
 	log.Print(minConsumption)
 	log.Print(minPosition)
-	log.Print(fuelConsumption)
 }
