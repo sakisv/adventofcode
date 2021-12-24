@@ -3,15 +3,13 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
 
-func getInput() [][]int {
-	contents, err := ioutil.ReadFile("input.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
+func getInput(filename string) [][]int {
+	contents, err := ioutil.ReadFile(filename)
 
 	strLines := strings.Split(strings.TrimSpace(string(contents)), "\n")
 	if err != nil {
@@ -31,36 +29,45 @@ func getInput() [][]int {
 	return ret
 }
 
+type Cell struct {
+	row, column, value int
+}
+
+func (c *Cell) isLowerThanNeighbors(field [][]int) bool {
+	if c.value == 9 {
+		return false
+	}
+
+	if c.row - 1 >= 0 && field[c.row - 1][c.column] < c.value {
+		return false
+	}
+	if c.row + 1 < len(field) && field[c.row + 1][c.column] < c.value {
+		return false
+	}
+
+	if c.column - 1 >= 0 && field[c.row][c.column - 1] < c.value {
+		return false
+	}
+	if c.column + 1 < len(field[0]) && field[c.row][c.column + 1] < c.value {
+		return false
+	}
+
+	return true
+}
+
 func main() {
-	input := getInput()
+	filename := "input.txt"
+	if len(os.Args) > 1 {
+		filename = os.Args[1]
+	}
+	input := getInput(filename)
 
-	rowCount := len(input)
-	colCount := len(input[0])
 	riskLevelSum := 0
-	for i, row := range input {
-		for j, _ := range row {
-			var adjacentCells []int
-			if i-1 >= 0 {
-				adjacentCells = append(adjacentCells, input[i-1][j])
-			}
-			if i+1 < rowCount {
-				adjacentCells = append(adjacentCells, input[i+1][j])
-			}
-			if j-1 >= 0 {
-				adjacentCells = append(adjacentCells, input[i][j-1])
-			}
-			if j+1 < colCount {
-				adjacentCells = append(adjacentCells, input[i][j+1])
-			}
-
-			lowerCount := 0
-			for _, adjacentCell := range adjacentCells {
-				if input[i][j] < adjacentCell {
-					lowerCount++
-				}
-			}
-			if lowerCount == len(adjacentCells) {
-				riskLevelSum += 1 + input[i][j]
+	for row := 0; row < len(input); row++ {
+		for column := 0; column < len(input[row]); column++ {
+			c := Cell{row, column, input[row][column]}
+			if c.isLowerThanNeighbors(input) {
+				riskLevelSum += c.value + 1
 			}
 		}
 	}
