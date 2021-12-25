@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -30,6 +31,7 @@ const (
 	OPENING_CURLY = "{"
 	OPENING_QUOTE = "<"
 
+	UNPROCESSED = "UNPROCESSED"
 	CORRUPTED	= "CORRUPTED"
 	INCOMPLETE	= "INCOMPLETE"
 	GOOD		= "GOOD"
@@ -40,6 +42,13 @@ var illegalCharacterScore = map[string]int {
 	CLOSING_BRACKET: 57,
 	CLOSING_CURLY: 1197,
 	CLOSING_QUOTE: 25137,
+}
+
+var fixCharacterScore = map[string]int {
+	CLOSING_PARENTHESES: 1,
+	CLOSING_BRACKET: 2,
+	CLOSING_CURLY: 3,
+	CLOSING_QUOTE: 4,
 }
 
 var openingBrackets = map[string]string {
@@ -54,6 +63,13 @@ var closingBracketsToOpening = map[string]string {
 	CLOSING_BRACKET: OPENING_BRACKET,
 	CLOSING_CURLY: OPENING_CURLY,
 	CLOSING_QUOTE: OPENING_QUOTE,
+}
+
+var openingBracketsToClosing = map[string]string {
+	OPENING_PARENTHESES:	CLOSING_PARENTHESES,
+	OPENING_BRACKET:		CLOSING_BRACKET,
+	OPENING_CURLY:			CLOSING_CURLY,
+	OPENING_QUOTE:			CLOSING_QUOTE,
 }
 
 func (l *Line) Push(newItem string) {
@@ -93,8 +109,8 @@ type Line struct {
 	score int
 }
 
-func (l *Line) getStatus() string {
-	l.status = INCOMPLETE
+func (l *Line) processLine() {
+	l.status = UNPROCESSED
 	for i:= 0; i < len(l.characters); i++ {
 		c := string(l.characters[i])
 
@@ -113,7 +129,21 @@ func (l *Line) getStatus() string {
 		}
 	}
 
-	return l.status
+	// if the line is not corrupted and it still has items in the stack, then it's incomplete
+	if l.status != CORRUPTED && len(l.stack) > 0 {
+		l.status = INCOMPLETE
+
+		stackLength := len(l.stack)
+		for i := 0; i < stackLength; i++ {
+			popped := l.Pop()
+
+			if matchingBracket, ok := openingBracketsToClosing[popped]; ok {
+				l.score = l.score * 5 + fixCharacterScore[matchingBracket]
+			} else {
+				log.Print("Found a closing bracket in an incomplete line, should be corrupted?")
+			}
+		}
+	}
 }
 
 func main() {
@@ -124,13 +154,20 @@ func main() {
 	input := getInput(filename)
 
 	scoreSum := 0
+	var incompleteLinesScore []int
 	for _, line := range input {
 		l := LineFromString(line)
-		status := l.getStatus()
-		if status == CORRUPTED {
+		l.processLine()
+		if l.status == CORRUPTED {
 			scoreSum += l.score
+		}
+
+		if l.status == INCOMPLETE {
+			incompleteLinesScore = append(incompleteLinesScore, l.score)
 		}
 	}
 	log.Print(scoreSum)
 
+	sort.Ints(incompleteLinesScore)
+	log.Print(incompleteLinesScore[len(incompleteLinesScore)/2])
 }
