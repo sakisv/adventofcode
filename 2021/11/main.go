@@ -118,7 +118,7 @@ func main() {
 	for {
 		step++
 		totalFlashes = 0
-		log.Printf("\n\nStep %v", i + 1)
+		log.Printf("\n\nStep %v", step)
 
 		// for each step we reset the "flashed" flag of all octopuses
 		for _, oct := range octopuses {
@@ -135,8 +135,10 @@ func main() {
 			}
 		}
 
-		log.Printf("Total flashes: %v", totalFlashes)
-		log.Print(PrintField(octopuses))
+		if totalFlashes == 100 {
+			log.Printf("Synchronised at step %v", step)
+			break
+		}
 	}
 
 }
