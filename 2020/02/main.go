@@ -8,38 +8,31 @@ import (
 )
 
 type Password struct {
-	minCount        int
-	maxCount        int
-	password        string
-	targetCharacter string
+	position1       int
+	position2       int
+	password        []rune
+	targetCharacter []rune
 }
 
 func (p *Password) New(line string) {
 	spaceSplit := strings.Split(line, " ")
 
-	p.password = spaceSplit[2]
+	p.password = []rune(spaceSplit[2])
 
 	character := spaceSplit[1]
-	p.targetCharacter = strings.Split(character, ":")[0]
+	p.targetCharacter = []rune(strings.Split(character, ":")[0])
 
-	counts := spaceSplit[0]
-	minMaxSplit := strings.Split(counts, "-")
-	p.minCount, _ = strconv.Atoi(minMaxSplit[0])
-	p.maxCount, _ = strconv.Atoi(minMaxSplit[1])
+	positions := spaceSplit[0]
+	positionSplit := strings.Split(positions, "-")
+	p.position1, _ = strconv.Atoi(positionSplit[0])
+	p.position2, _ = strconv.Atoi(positionSplit[1])
 }
 
-func (p Password) isValid() bool {
-	charCount := strings.Count(p.password, p.targetCharacter)
+func (p *Password) isValid() bool {
+	pos1Exists := p.password[p.position1-1] == p.targetCharacter[0]
+	pos2Exists := p.password[p.position2-1] == p.targetCharacter[0]
 
-	if charCount > p.maxCount {
-		return false
-	}
-
-	if charCount < p.minCount {
-		return false
-	}
-
-	return true
+	return pos1Exists != pos2Exists
 }
 
 func getInput() []Password {
@@ -51,10 +44,10 @@ func getInput() []Password {
 	lines := strings.Split(strings.TrimSpace(string(contents)), "\n")
 
 	passwords := make([]Password, len(lines))
-	for _, v := range lines {
+	for i, v := range lines {
 		p := Password{}
 		p.New(v)
-		passwords = append(passwords, p)
+		passwords[i] = p
 	}
 	return passwords
 }
