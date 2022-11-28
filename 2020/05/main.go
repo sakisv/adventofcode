@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"sort"
 	"strings"
 )
 
@@ -72,17 +73,26 @@ func getCol(v []string) int {
 func main() {
 	seats := getInput()
 
+	allSeatIds := make([]int, len(seats))
 	maxSeatId := 0
-	for _, s := range seats {
+	for i, s := range seats {
 		row := getRow(strings.Split(s[:7], ""))
 		col := getCol(strings.Split(s[7:], ""))
 		seatId := (row * 8) + col
+		allSeatIds[i] = seatId
 
-		log.Print(row, col)
+		// log.Print(row, col)
 		if seatId > maxSeatId {
 			maxSeatId = seatId
 		}
 	}
-
 	log.Print(maxSeatId)
+
+	sort.Ints(allSeatIds)
+	for i := 1; i < len(allSeatIds); i++ {
+		currentSeatId := allSeatIds[i-1] + 1
+		if currentSeatId != allSeatIds[i] {
+			log.Print("Missing seat is ", currentSeatId)
+		}
+	}
 }
