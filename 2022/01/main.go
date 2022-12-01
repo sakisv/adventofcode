@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -19,8 +20,8 @@ func getInput() []string {
 func main() {
 	calLinesPerElf := getInput()
 
-	maxCals := 0
-	for _, elfLines := range calLinesPerElf {
+	calsPerElf := make([]int, len(calLinesPerElf))
+	for i, elfLines := range calLinesPerElf {
 
 		elfSum := 0
 		for _, calString := range strings.Split(strings.TrimSpace(string(elfLines)), "\n") {
@@ -31,9 +32,15 @@ func main() {
 			elfSum += calInt
 		}
 
-		if elfSum > maxCals {
-			maxCals = elfSum
-		}
+		calsPerElf[i] = elfSum
 	}
-	log.Print(maxCals)
+
+	sort.Ints(calsPerElf)
+	topThreeTotalCals := 0
+	for _, v := range calsPerElf[len(calsPerElf)-3 : len(calLinesPerElf)] {
+		log.Print(v)
+		topThreeTotalCals += v
+	}
+	log.Print(topThreeTotalCals)
+
 }
