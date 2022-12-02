@@ -24,15 +24,51 @@ type Shape struct {
 
 func (s *Shape) New(letter string) {
 	s.letter = letter
-	if letter == "A" || letter == "X" {
+	if letter == "A" {
 		s.description = ROCK
 		s.score = 1
-	} else if letter == "B" || letter == "Y" {
+	} else if letter == "B" {
 		s.description = PAPER
 		s.score = 2
-	} else if letter == "C" || letter == "Z" {
+	} else if letter == "C" {
 		s.description = SCISSORS
 		s.score = 3
+	}
+}
+
+func getWinForDescription(description string) (string, int) {
+	if description == ROCK {
+		return PAPER, 2
+	}
+	if description == PAPER {
+		return SCISSORS, 3
+	}
+	return ROCK, 1
+}
+
+func getLossForDescription(description string) (string, int) {
+	if description == ROCK {
+		return SCISSORS, 3
+	}
+	if description == PAPER {
+		return ROCK, 1
+	}
+	return PAPER, 2
+}
+
+func (s *Shape) NewFromOpponent(letter string, opponent Shape) {
+	s.letter = letter
+	if letter == "Z" {
+		s.description, s.score = getWinForDescription(opponent.description)
+	}
+
+	if letter == "Y" {
+		s.description = opponent.description
+		s.score = opponent.score
+	}
+
+	if letter == "X" {
+		s.description, s.score = getLossForDescription(opponent.description)
 	}
 }
 
@@ -46,7 +82,7 @@ func (g *Game) New(line string) {
 	s1 := Shape{}
 	s2 := Shape{}
 	s1.New(players[0])
-	s2.New(players[1])
+	s2.NewFromOpponent(players[1], s1)
 	g.player1 = s1
 	g.player2 = s2
 }
