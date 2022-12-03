@@ -18,12 +18,15 @@ const (
 	CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 )
 
-func (r *Rucksack) findDoubleItemPriority() {
+func findItemPriority(item string) int {
+	ret := -1
 	for i, v := range strings.Split(CHARS, "") {
-		if v == r.doubleItem {
-			r.doubleItemPriority = i + 1
+		if v == item {
+			ret = i + 1
 		}
 	}
+
+	return ret
 }
 
 func (r *Rucksack) findDoubleItem() {
@@ -42,12 +45,35 @@ func (r *Rucksack) findDoubleItem() {
 	}
 }
 
+func findCommonItem(rucksacks []Rucksack) string {
+	allItems := make(map[string]int)
+	for _, r := range rucksacks {
+		rucksackSet := make(map[string]bool)
+		for _, item := range r.contents {
+			if rucksackSet[item] {
+				continue
+			}
+			rucksackSet[item] = true
+			allItems[item] += 1
+		}
+	}
+
+	commonItem := ""
+	for k, v := range allItems {
+		if v == 3 {
+			commonItem = k
+		}
+	}
+
+	return commonItem
+}
+
 func (r *Rucksack) New(line string) {
 	r.contents = strings.Split(line, "")
 	r.comp1 = r.contents[:len(r.contents)/2]
 	r.comp2 = r.contents[len(r.contents)/2:]
 	r.findDoubleItem()
-	r.findDoubleItemPriority()
+	r.doubleItemPriority = findItemPriority(r.doubleItem)
 }
 
 func getInput() []Rucksack {
@@ -69,10 +95,12 @@ func getInput() []Rucksack {
 func main() {
 	rucksacks := getInput()
 
-	doubleItemPrioritySum := 0
-	for _, r := range rucksacks {
-		doubleItemPrioritySum += r.doubleItemPriority
+	commonItemSum := 0
+	for i := 0; i < len(rucksacks); i = i + 3 {
+		rucksacksToCompare := []Rucksack{rucksacks[i], rucksacks[i+1], rucksacks[i+2]}
+		commonItem := findCommonItem(rucksacksToCompare)
+		commonItemSum += findItemPriority(commonItem)
 	}
 
-	log.Print(doubleItemPrioritySum)
+	log.Print(commonItemSum)
 }
