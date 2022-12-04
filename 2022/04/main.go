@@ -43,9 +43,30 @@ func AssignmentsFullyOverlap(a, b Assignment) bool {
 	return false
 }
 
+func AssignmentsOverlap(a, b Assignment) bool {
+	if a.start >= b.start && a.start <= b.end {
+		return true
+	}
+
+	if a.end >= b.start && a.end <= b.end {
+		return true
+	}
+
+	if b.start >= a.start && b.start <= a.end {
+		return true
+	}
+
+	if b.end >= a.start && b.end <= a.end {
+		return true
+	}
+
+	return false
+}
+
 func main() {
 	lines := getInput()
 
+	fullyOverlappingPairs := 0
 	overlappingPairs := 0
 	for _, line := range lines {
 		pairs := strings.Split(line, ",")
@@ -55,9 +76,14 @@ func main() {
 		a2.New(pairs[1])
 
 		if AssignmentsFullyOverlap(a1, a2) {
+			fullyOverlappingPairs += 1
+		}
+
+		if AssignmentsOverlap(a1, a2) {
 			overlappingPairs += 1
 		}
 	}
 
+	log.Print(fullyOverlappingPairs)
 	log.Print(overlappingPairs)
 }
