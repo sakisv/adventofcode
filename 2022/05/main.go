@@ -67,6 +67,29 @@ func (c *Crates) New(stacksInput []string) {
 	}
 }
 
+func (c *Crates) Move(count, from, to int) {
+	for i := 0; i < count; i++ {
+		f := c.stacks[from]
+		t := c.stacks[to]
+
+		popped := f.Pop()
+		t.Push(popped)
+
+		c.stacks[from] = f
+		c.stacks[to] = t
+	}
+}
+
+func parseMove(move string) (int, int, int) {
+	splitMove := strings.Split(move, " ")
+
+	count, _ := strconv.Atoi(splitMove[1])
+	from, _ := strconv.Atoi(splitMove[3])
+	to, _ := strconv.Atoi(splitMove[5])
+
+	return count, from, to
+}
+
 func getInput() ([]string, []string) {
 	contents, err := ioutil.ReadFile("input.txt")
 	if err != nil {
@@ -82,7 +105,17 @@ func getInput() ([]string, []string) {
 }
 
 func main() {
-	stacks, _ := getInput()
+	stacks, moves := getInput()
 	crates := Crates{}
 	crates.New(stacks)
+
+	for _, move := range moves {
+		count, from, to := parseMove(move)
+		crates.Move(count, from, to)
+	}
+
+	for i := 0; i < len(crates.stacks); i++ {
+		stackContent := crates.stacks[i+1].contents
+		log.Print("stack ", i, " item: ", stackContent[len(stackContent)-1])
+	}
 }
