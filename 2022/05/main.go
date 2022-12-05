@@ -68,14 +68,16 @@ func (c *Crates) New(stacksInput []string) {
 }
 
 func (c *Crates) Move(count, from, to int) {
+	popped := make([]string, count)
 	for i := 0; i < count; i++ {
 		f := c.stacks[from]
-		t := c.stacks[to]
-
-		popped := f.Pop()
-		t.Push(popped)
-
+		popped[i] = f.Pop()
 		c.stacks[from] = f
+	}
+
+	for i := count - 1; i >= 0; i-- {
+		t := c.stacks[to]
+		t.Push(popped[i])
 		c.stacks[to] = t
 	}
 }
