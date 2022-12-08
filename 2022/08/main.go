@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-func getInput() [][]int {
-	contents, err := ioutil.ReadFile("input.txt")
+func getInput(filename string) [][]int {
+	contents, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -27,22 +27,28 @@ func getInput() [][]int {
 	return numbers
 }
 
-func isTallestTree(v int, input []int) bool {
-	for _, item := range input {
-		if item >= v {
-			return false
+func getScenicScore(v int, input []int) int {
+	//log.Print("====> scenic score input: ", input)
+	treesItCanSee := 0
+	for _, tree := range input {
+		treesItCanSee += 1
+		if tree >= v {
+			break
 		}
 	}
 
-	return true
+	return treesItCanSee
 }
 
 func main() {
-	input := getInput()
+	input := getInput("input.txt")
 
 	visibleFromOutside := 0
+	maxScenicScore := 0
 	for i, line := range input {
 		for j, currentTree := range line {
+			//log.Print("Tree: ", currentTree, "<", i, j, ">")
+			treeScenicScore := 1
 			// this is an edge element, it is visible, we move on
 			if i == 0 || j == 0 || i == len(input)-1 || j == len(line)-1 {
 				visibleFromOutside += 1
@@ -52,50 +58,56 @@ func main() {
 			// for each tree we check top, down, left and right
 
 			// first with rows
-			colBefore := make([]int, i)
-			colAfter := make([]int, len(input[i+1:]))
+			colBefore := make([]int, 0)
+			colAfter := make([]int, 0)
 
 			// before
-			for tmpI := 0; tmpI < i; tmpI++ {
+			// for the trees that come _before_ ours we need to add them to the
+			// list in reverse
+			for tmpI := i - 1; tmpI >= 0; tmpI-- {
 				colBefore = append(colBefore, input[tmpI][j])
 			}
-			if isTallestTree(currentTree, colBefore) {
-				visibleFromOutside += 1
-				continue
-			}
+			treesItCanSee := getScenicScore(currentTree, colBefore)
+			//log.Print("=> Trees it can see up: ", treesItCanSee)
+			treeScenicScore *= treesItCanSee
 
 			// after
 			for tmpI := i + 1; tmpI < len(input); tmpI++ {
 				colAfter = append(colAfter, input[tmpI][j])
 			}
-			if isTallestTree(currentTree, colAfter) {
-				visibleFromOutside += 1
-				continue
-			}
+			treesItCanSee = getScenicScore(currentTree, colAfter)
+			//log.Print("=> Trees it can see down: ", treesItCanSee)
+			treeScenicScore *= treesItCanSee
 
 			// get row items
-			rowBefore := make([]int, j)
-			rowAfter := make([]int, len(line[j+1:]))
+			rowBefore := make([]int, 0)
+			rowAfter := make([]int, 0)
 
 			// before
-			for tmpJ := 0; tmpJ < j; tmpJ++ {
-				rowBefore = append(rowBefore, input[i][tmpJ])
+			// for the trees that come _before_ ours we need to add them to the
+			// list in reverse
+			for tmpJ := j - 1; tmpJ >= 0; tmpJ-- {
+				rowBefore = append(rowBefore, line[tmpJ])
 			}
-			if isTallestTree(currentTree, rowBefore) {
-				visibleFromOutside += 1
-				continue
-			}
+			treesItCanSee = getScenicScore(currentTree, rowBefore)
+			//log.Print("=> Trees it can see left: ", treesItCanSee)
+			treeScenicScore *= treesItCanSee
 
 			// after
 			for tmpJ := j + 1; tmpJ < len(line); tmpJ++ {
-				rowAfter = append(rowAfter, input[i][tmpJ])
+				rowAfter = append(rowAfter, line[tmpJ])
 			}
-			if isTallestTree(currentTree, rowAfter) {
-				visibleFromOutside += 1
-				continue
+			treesItCanSee = getScenicScore(currentTree, rowAfter)
+			//log.Print("=> Trees it can see right: ", treesItCanSee)
+			treeScenicScore *= treesItCanSee
+
+			//log.Print("==> Scenic score: ", treeScenicScore)
+
+			if treeScenicScore > maxScenicScore {
+				maxScenicScore = treeScenicScore
 			}
 		}
 	}
 
-	log.Print(visibleFromOutside)
+	log.Print(maxScenicScore)
 }
