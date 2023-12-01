@@ -14,15 +14,20 @@ fn first_and_last_digits_from_str(mut line_digits: String) -> String {
     return first_last;
 }
 
+fn extract_digits_as_str(line: String) -> String {
+    let mut line_digits = String::from("");
+    for c in line.chars() {
+        if c.is_ascii_digit() {
+            line_digits.push(c);
+        }
+    }
+    line_digits
+}
+
 fn solve_part1(input: &Vec<String>) -> i32 {
     let mut sum = 0;
     for line in input {
-        let mut line_digits = String::from("");
-        for c in line.chars() {
-            if c.is_ascii_digit() {
-                line_digits.push(c);
-            }
-        }
+        let line_digits = extract_digits_as_str(line.to_string());
         let first_last = first_and_last_digits_from_str(line_digits.clone());
         let line_numbers: i32 = first_last.parse().unwrap();
         sum = sum + line_numbers;
