@@ -65,13 +65,14 @@ fn extract_text_and_digits_as_str(line: String) -> String {
 
     for item in text_to_numbers {
         if line.contains(item.0) {
-            let tmp_pos = line.find(item.0).unwrap();
-            if tmp_pos < first_position {
-                first_position = tmp_pos;
+            let tmp_first_pos = line.find(item.0).unwrap();
+            if tmp_first_pos < first_position {
+                first_position = tmp_first_pos;
                 first_digit = item.1;
             }
-            if tmp_pos > last_position {
-                last_position = tmp_pos;
+            let tmp_last_pos = line.rfind(item.0).unwrap();
+            if tmp_last_pos > last_position {
+                last_position = tmp_last_pos;
                 last_digit = item.1;
             }
         }
