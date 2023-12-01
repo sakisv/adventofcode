@@ -36,8 +36,61 @@ fn solve_part1(input: &Vec<String>) -> i32 {
     sum
 }
 
+fn extract_text_and_digits_as_str(line: String) -> String {
+    let text_to_numbers = vec![
+        ("one", "1"),
+        ("two", "2"),
+        ("three", "3"),
+        ("four", "4"),
+        ("five", "5"),
+        ("six", "6"),
+        ("seven", "7"),
+        ("eight", "8"),
+        ("nine", "9"),
+        ("1", "1"),
+        ("2", "2"),
+        ("3", "3"),
+        ("4", "4"),
+        ("5", "5"),
+        ("6", "6"),
+        ("7", "7"),
+        ("8", "8"),
+        ("9", "9"),
+    ];
+
+    let mut first_digit = "";
+    let mut last_digit = "";
+    let mut first_position = line.len();
+    let mut last_position = 0;
+
+    for item in text_to_numbers {
+        if line.contains(item.0) {
+            let tmp_pos = line.find(item.0).unwrap();
+            if tmp_pos < first_position {
+                first_position = tmp_pos;
+                first_digit = item.1;
+            }
+            if tmp_pos > last_position {
+                last_position = tmp_pos;
+                last_digit = item.1;
+            }
+        }
+    }
+
+    format!("{}{}", first_digit, last_digit)
+}
+
 fn solve_part2(input: &Vec<String>) -> i32 {
-    let sum = 0;
+    let mut sum = 0;
+
+    for line in input {
+        let line_digits = extract_text_and_digits_as_str(line.to_string());
+        let first_last = first_and_last_digits_from_str(line_digits.clone());
+        let line_numbers: i32 = first_last.parse().unwrap();
+        println!("Line: {line} - Digits: {line_digits} - first_last: {first_last} - As int: {line_numbers} - Sum: {sum}");
+        sum = sum + line_numbers;
+    }
+
     sum
 }
 
