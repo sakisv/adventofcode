@@ -28,6 +28,11 @@ fn solve_part1(input: &Vec<String>) -> i32 {
     sum
 }
 
+fn solve_part2(input: &Vec<String>) -> i32 {
+    let sum = 0;
+    sum
+}
+
 fn get_input(filename: &str) -> Vec<String> {
     read_to_string(filename)
     .unwrap()  // panic on possible file-reading errors
@@ -58,5 +63,20 @@ mod tests {
         ];
         let result = super::solve_part1(&input);
         assert_eq!(result, 142);
+    }
+
+    #[test]
+    fn solve_part2() {
+        let input = vec![
+            String::from("two1nine"),
+            String::from("eightwothree"),
+            String::from("abcone2threexyz"),
+            String::from("xtwone3four"),
+            String::from("4nineeightseven2"),
+            String::from("zoneight234"),
+            String::from("7pqrstsixteen"),
+        ];
+        let result = super::solve_part2(&input);
+        assert_eq!(result, 281);
     }
 }
