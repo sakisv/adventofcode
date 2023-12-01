@@ -1,6 +1,6 @@
 use std::fs::read_to_string;
 
-fn solve_part1(input: Vec<String>) -> i32 {
+fn solve_part1(input: &Vec<String>) -> i32 {
     let mut sum = 0;
     for line in input {
         let mut line_digits = String::from("");
@@ -39,8 +39,11 @@ fn get_input(filename: &str) -> Vec<String> {
 fn main() {
     let filename = "input.txt";
     let input = get_input(filename);
-    let sum = solve_part1(input);
-    println!("{sum}");
+    let part1 = solve_part1(&input);
+    println!("Part 1: {part1}");
+
+    let part2 = solve_part2(&input);
+    println!("Part 2: {part2}");
 }
 
 #[cfg(test)]
@@ -53,7 +56,7 @@ mod tests {
             String::from("a1b2c3d4e5f"),
             String::from("treb7uchet"),
         ];
-        let result = super::solve_part1(input);
+        let result = super::solve_part1(&input);
         assert_eq!(result, 142);
     }
 }
