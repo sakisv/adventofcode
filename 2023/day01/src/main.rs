@@ -136,8 +136,9 @@ mod tests {
             String::from("4nineeightseven2"),
             String::from("zoneight234"),
             String::from("7pqrstsixteen"),
+            String::from("onethreetjpmpvpr6threethreeone"), // 11
         ];
         let result = super::solve_part2(&input);
-        assert_eq!(result, 281);
+        assert_eq!(result, 292); // 281 + 11
     }
 }
