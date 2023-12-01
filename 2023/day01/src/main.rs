@@ -1,5 +1,19 @@
 use std::fs::read_to_string;
 
+fn first_and_last_digits_from_str(mut line_digits: String) -> String {
+    let first_last: String;
+    let first_digit = line_digits.remove(0);
+
+    if line_digits.len() > 0 {
+        let last_digit = line_digits.remove(line_digits.len()-1);
+        first_last = format!("{}{}", first_digit, last_digit);
+    } else {
+        first_last = format!("{}{}", first_digit, first_digit);
+    }
+
+    return first_last;
+}
+
 fn solve_part1(input: &Vec<String>) -> i32 {
     let mut sum = 0;
     for line in input {
@@ -9,22 +23,11 @@ fn solve_part1(input: &Vec<String>) -> i32 {
                 line_digits.push(c);
             }
         }
-        let line_numbers: i32;
-        let first_last: String;
-        let first_digit = line_digits.remove(0);
-
-        if line_digits.len() > 0 {
-            let last_digit = line_digits.remove(line_digits.len()-1);
-            first_last = format!("{}{}", first_digit, last_digit);
-            line_numbers = first_last.parse().unwrap();
-        } else {
-            first_last = format!("{}{}", first_digit, first_digit);
-            line_numbers = first_last.parse().unwrap();
-        }
+        let first_last = first_and_last_digits_from_str(line_digits.clone());
+        let line_numbers: i32 = first_last.parse().unwrap();
         sum = sum + line_numbers;
         println!("Line: {line} - Digits: {line_digits} - first_last: {first_last} - As int: {line_numbers} - Sum: {sum}");
     }
-
     sum
 }
 
