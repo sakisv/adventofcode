@@ -18,6 +18,17 @@ fn get_game_number_and_color_picks(line: &str) -> (i32, String) {
     (game_number, color_picks)
 }
 
+fn get_color_counts(color_picks: String) -> Vec<(i32, String)> {
+    let re = Regex::new(r"(?<count>\d+)\s(?<color>red|green|blue)").unwrap();
+    let color_counts: Vec<(i32, String)> = re.captures_iter(&color_picks).map(|cap|{
+        let color = String::from(cap.name("color").unwrap().as_str());
+        let count: i32 = cap.name("count").unwrap().as_str().parse().unwrap();
+        (count, color)
+    }).collect();
+
+    color_counts
+}
+
 fn solve_part1(input: &Vec<String>) -> i32 {
     let mut sum = 0;
     let max_red = 12;
@@ -26,26 +37,19 @@ fn solve_part1(input: &Vec<String>) -> i32 {
 
     for line in input {
         let (game_number, color_picks) = get_game_number_and_color_picks(line);
-
-        let re = Regex::new(r"(?<count>\d+)\s(?<color>red|green|blue)").unwrap();
-        let color_counts: Vec<(&str, &str)> = re.captures_iter(&color_picks).map(|cap|{
-            let color = cap.name("color").unwrap().as_str();
-            let count = cap.name("count").unwrap().as_str();
-            (count, color)
-        }).collect();
+        let color_counts = get_color_counts(color_picks);
 
         let mut possible_game = true;
         for (count, color) in color_counts {
-            let count_numb: i32 = count.parse().unwrap();
-            if color == "red" && count_numb > max_red {
+            if color == "red" && count > max_red {
                 possible_game = false;
                 break;
             }
-            if color == "green" && count_numb > max_green {
+            if color == "green" && count > max_green {
                 possible_game = false;
                 break;
             }
-            if color == "blue" && count_numb > max_blue {
+            if color == "blue" && count > max_blue {
                 possible_game = false;
                 break;
             }
