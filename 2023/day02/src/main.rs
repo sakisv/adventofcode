@@ -9,6 +9,15 @@ fn get_input(filename: &str) -> Vec<String> {
     .collect()  // gather them together into a vector
 }
 
+fn get_game_number_and_color_picks(line: &str) -> (i32, String) {
+    let line_split: Vec<&str> = line.split(":").collect();
+    let _game_split: Vec<&str> = line_split[0].split(" ").collect();
+    let game_number = _game_split[1].parse().unwrap();
+    let color_picks = String::from(line_split[1]);
+
+    (game_number, color_picks)
+}
+
 fn solve_part1(input: &Vec<String>) -> i32 {
     let mut sum = 0;
     let max_red = 12;
@@ -16,12 +25,10 @@ fn solve_part1(input: &Vec<String>) -> i32 {
     let max_blue = 14;
 
     for line in input {
-        let line_split: Vec<&str> = line.split(":").collect();
-        let _game_split: Vec<&str> = line_split[0].split(" ").collect();
-        let game_number: i32 = _game_split[1].parse().unwrap();
+        let (game_number, color_picks) = get_game_number_and_color_picks(line);
 
         let re = Regex::new(r"(?<count>\d+)\s(?<color>red|green|blue)").unwrap();
-        let color_counts: Vec<(&str, &str)> = re.captures_iter(line_split[1]).map(|cap|{
+        let color_counts: Vec<(&str, &str)> = re.captures_iter(&color_picks).map(|cap|{
             let color = cap.name("color").unwrap().as_str();
             let count = cap.name("count").unwrap().as_str();
             (count, color)
