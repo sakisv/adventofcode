@@ -21,6 +21,9 @@ fn solve_part1(input: &Vec<String>) -> i32 {
         // if there are matches, check their surroundings for symbols
         let matches: Vec<_> = re.find_iter(line).collect();
         for m in matches {
+            // ranges don't include the end part, i.e. they are [start, end)
+            // matches already point to the next byte, so if we want to include that too, we point one more byte out
+            // for rows, we need to end the range in current_row + 2 so that current_row + 1 is included
             let match_start = if m.start() > 0 { m.start() - 1} else { m.start()};
             let match_end = if m.end() == line.len() { m.end() } else { m.end() + 1 };
 
