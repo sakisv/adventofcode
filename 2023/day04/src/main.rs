@@ -45,9 +45,24 @@ fn solve_part1(input: &Vec<String>) -> i32 {
 }
 
 fn solve_part2(input: &Vec<String>) -> i32 {
-    let mut sum = 0;
+    let mut scratchcards_count = 0;
+    let mut copies = vec![1; input.len()];
 
-    sum
+    for i in 0..input.len() {
+        let (our_numbers, winning_numbers) = split_line(&input[i]);
+        let matches: Vec<_> = our_numbers.intersection(&winning_numbers).collect();
+        let match_count = matches.len();
+        for _ in 0..copies[i] {
+            scratchcards_count += 1;
+
+            for j in i+1..i+1+match_count {
+                copies[j] += 1;
+            }
+        }
+
+    }
+
+    scratchcards_count
 }
 
 fn main() {
@@ -55,6 +70,9 @@ fn main() {
 
     let part1 = solve_part1(&input);
     println!("Part 1: {part1}");
+
+    let part2 = solve_part2(&input);
+    println!("Part 2: {part2}");
 }
 
 #[cfg(test)]
