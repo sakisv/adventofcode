@@ -51,6 +51,27 @@ fn solve_part1(input: &Vec<String>) -> i32 {
     sum
 }
 
+fn solve_part2(input: &Vec<String>) -> i32 {
+    let product = 1;
+
+    // first get all the numbers' locations
+    let mut all_matches: Vec<regex::Match> = vec![];
+    let re = Regex::new(r"\d+").unwrap();
+    for i in 0..input.len() {
+        let line = &input[i];
+        if ! re.is_match(line) {
+            continue
+        }
+        for m in re.find_iter(line) {
+            all_matches.push(m);
+        }
+    }
+
+
+
+    product
+}
+
 fn main() {
     let input = get_input("input.txt");
 
@@ -77,5 +98,24 @@ mod tests {
 
         let result = super::solve_part1(&input);
         assert_eq!(result, 4361);
+    }
+
+    #[test]
+    fn solve_part2() {
+        let input = vec![
+            String::from("467..114.."),
+            String::from("...*......"),
+            String::from("..35..633."),
+            String::from("......#..."),
+            String::from("617*......"),
+            String::from(".....+.58."),
+            String::from("..592....."),
+            String::from("......755."),
+            String::from("...$.*...."),
+            String::from(".664.598.."),
+        ];
+
+        let result = super::solve_part2(&input);
+        assert_eq!(result, 467835);
     }
 }
