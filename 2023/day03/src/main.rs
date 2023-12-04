@@ -1,4 +1,4 @@
-use std::fs::read_to_string;
+use std::{fs::read_to_string, collections::HashMap};
 use regex::Regex;
 
 fn get_input(filename: &str) -> Vec<String> {
@@ -52,24 +52,56 @@ fn solve_part1(input: &Vec<String>) -> i32 {
 }
 
 fn solve_part2(input: &Vec<String>) -> i32 {
-    let product = 1;
+    let mut sum = 0;
 
-    // first get all the numbers' locations
-    let mut all_matches: Vec<regex::Match> = vec![];
+    // create a dict that its keys will be the location of the stars
+    // and its values will be a list of the numbers around them
+    // eventually we'll go through each k,v and multiply them if v.len() == 2
+    let mut stars_to_numbers: HashMap<String, Vec<i32>>= HashMap::new();
     let re = Regex::new(r"\d+").unwrap();
     for i in 0..input.len() {
         let line = &input[i];
         if ! re.is_match(line) {
             continue
         }
-        for m in re.find_iter(line) {
-            all_matches.push(m);
+        // if there are matches, check their surroundings for stars ('*')
+        let matches: Vec<_> = re.find_iter(line).collect();
+        for m in matches {
+            // ranges don't include the end part, i.e. they are [start, end)
+            // matches already point to the next byte, so if we want to include that too, we point one more byte out
+            // for rows, we need to end the range in current_row + 2 so that current_row + 1 is included
+            let match_start = if m.start() > 0 { m.start() - 1} else { m.start()};
+            let match_end = if m.end() == line.len() { m.end() } else { m.end() + 1 };
+
+            let start_row = if i > 0 { i - 1 } else { i };
+            let end_row = if i + 2 >= input.len() { input.len() } else {i + 2};
+            for row in start_row..end_row {
+                for col in match_start..match_end {
+                    let cur_char = &input[row].chars().nth(col).expect(format!("failed for line {i} - row {row} col {col}\n{}", input[row]).as_str());
+                    //println!("Line: {} - Match: {} - Row: {} - Col: {} - Char: {}", line, m.as_str(), row, col, cur_char);
+                    if ! cur_char.eq_ignore_ascii_case(&'*') {
+                        continue
+                    }
+                    let k = format!("{}-{}", row, col);
+                    let number: i32 = m.as_str().parse().unwrap();
+                    stars_to_numbers.entry(k.clone())
+                        .and_modify(|v| {
+                            v.push(number)
+                        })
+                        .or_insert(vec![number]);
+                }
+            }
         }
     }
+    //print!("{:#?}", stars_to_numbers);
+    for (_, v) in stars_to_numbers.into_iter() {
+        if v.len() != 2 {
+            continue
+        }
+        sum += v[0] * v[1];
+    }
 
-
-
-    product
+    sum
 }
 
 fn main() {
@@ -77,6 +109,9 @@ fn main() {
 
     let part1 = solve_part1(&input);
     println!("Part 1: {}", part1);
+
+    let part2 = solve_part2(&input);
+    println!("Part 2: {}", part2);
 }
 
 #[cfg(test)]
