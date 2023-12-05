@@ -75,11 +75,56 @@ fn solve_part1(sections: &Vec<String>) -> u32 {
     last_seed_values.into_iter().reduce(u32::min).unwrap()
 }
 
+fn solve_part2(sections: &Vec<String>) -> u32 {
+    let get_numbers = Regex::new(r"\d+").unwrap();
+    let seeds: Vec<u32> = get_numbers.find_iter(&sections[0]).map(|i| i.as_str().parse().unwrap()).collect();
+    let mut maps: Vec<Vec<Instructions>> = vec![];
+
+    for i in 1..sections.len() {
+        maps.push(get_map(sections[i].clone()))
+    }
+
+    let mut min_seeded_value = u32::MAX;
+    for i in 0..seeds.len() {
+        if i % 2 != 0 {
+            continue;
+        }
+        if i + 1 >= seeds.len() {
+            break;
+        }
+
+        for seed in seeds[i]..(seeds[i] + seeds[i+1]) {
+            let mut small_seed = seed;
+            //println!("Seed: {small_seed}");
+            for map in &maps {
+                for instruction in map {
+                    let new_seed = instruction.get_seed_mapping(small_seed);
+                    if new_seed != small_seed {
+                        small_seed = new_seed;
+                        break;
+                    }
+                }
+                //println!("End of map seed: {small_seed}");
+            }
+
+            if small_seed < min_seeded_value {
+                min_seeded_value = small_seed;
+            }
+        }
+    }
+
+    //println!("{:#?} {}", last_seed_values, last_seed_values.len());
+    min_seeded_value
+}
+
 fn main() {
     let sections = get_sections("input.txt");
 
     let part1 = solve_part1(&sections);
     println!("Part 1: {part1}");
+
+    let part2 = solve_part2(&sections);
+    println!("Part 2: {part2}");
 }
 
 #[cfg(test)]
@@ -124,5 +169,47 @@ humidity-to-location map:
 
         let result = super::solve_part1(&sections);
         assert_eq!(result, 35);
+    }
+
+    #[test]
+    fn solve_part2() {
+        let input = "seeds: 79 14 55 13
+
+seed-to-soil map:
+50 98 2
+52 50 48
+
+soil-to-fertilizer map:
+0 15 37
+37 52 2
+39 0 15
+
+fertilizer-to-water map:
+49 53 8
+0 11 42
+42 0 7
+57 7 4
+
+water-to-light map:
+88 18 7
+18 25 70
+
+light-to-temperature map:
+45 77 23
+81 45 19
+68 64 13
+
+temperature-to-humidity map:
+0 69 1
+1 0 69
+
+humidity-to-location map:
+60 56 37
+56 93 4";
+
+        let sections = input.split("\n\n").map(String::from).collect();
+
+        let result = super::solve_part2(&sections);
+        assert_eq!(result, 46);
     }
 }
