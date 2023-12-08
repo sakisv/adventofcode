@@ -102,10 +102,11 @@ impl Ord for Hand {
             for i in 0..self.combo.len() {
                 let c1 = self.combo.chars().nth(i).unwrap();
                 let c2 = other.combo.chars().nth(i).unwrap();
+
                 if card_values.get(&c1).unwrap() > card_values.get(&c2).unwrap() {
                     return Ordering::Greater;
-                } else if c1 < c2 {
-                    return Ordering::Less
+                } else if card_values.get(&c1).unwrap() < card_values.get(&c2).unwrap() {
+                    return Ordering::Less;
                 }
             }
         }
