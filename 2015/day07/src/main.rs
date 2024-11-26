@@ -131,11 +131,24 @@ fn solve_part1(input: &Vec<String>, target: String) -> u16 {
     solve(&mut graph, &target)
 }
 
+fn solve_part2(input: &Vec<String>, target: String, override_b: String) -> u16 {
+    let mut graph = create_graph_as_hashmap(input);
+
+    graph.insert(String::from("b"), override_b);
+    assert_eq!(input.len(), graph.len());
+
+    let target = graph.get(&target).unwrap().clone();
+    solve(&mut graph, &target)
+}
+
 fn main() {
     let filename = "input.txt";
     let input = get_input_lines(filename);
     let part1 = solve_part1(&input, String::from("a"));
     println!("Part 1: {part1}");
+
+    let part2 = solve_part2(&input, String::from("a"), part1.to_string());
+    println!("Part 2: {part2}");
 }
 
 #[cfg(test)]
