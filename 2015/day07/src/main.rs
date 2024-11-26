@@ -40,7 +40,7 @@ fn get_number(s: &str) -> u16 {
     s.parse::<u16>().unwrap()
 }
 
-fn solve(graph: &HashMap<String, String>, command: &String) -> u16 {
+fn solve(graph: &mut HashMap<String, String>, command: &String) -> u16 {
     // println!("Solving for {:#?}", command);
     let cmd_parts = command
         .split_ascii_whitespace()
@@ -57,7 +57,10 @@ fn solve(graph: &HashMap<String, String>, command: &String) -> u16 {
             if is_numeric(part) {
                 return get_number(part);
             } else {
-                return solve(graph, graph.get(part).unwrap());
+                let next_command = graph.get(part).unwrap().clone();
+                let res = solve(graph, &next_command);
+                graph.insert(command.to_string(), res.to_string());
+                return res;
             }
         }
         // 2 matches:
@@ -68,9 +71,14 @@ fn solve(graph: &HashMap<String, String>, command: &String) -> u16 {
             }
             let value = cmd_parts[1];
             if is_numeric(value) {
-                return !get_number(value);
+                let res = !get_number(value);
+                graph.insert(command.to_string(), res.to_string());
+                return res;
             } else {
-                return !solve(graph, graph.get(value).unwrap());
+                let next_command = graph.get(value).unwrap().clone();
+                let res = !solve(graph, &next_command);
+                graph.insert(command.to_string(), res.to_string());
+                return res;
             }
         }
         // 3 matches:
@@ -97,7 +105,7 @@ fn solve(graph: &HashMap<String, String>, command: &String) -> u16 {
                 }
             };
 
-            match center {
+            let res = match center {
                 "AND" => left & right,
                 "OR" => left | right,
                 "LSHIFT" => left << right,
@@ -105,7 +113,9 @@ fn solve(graph: &HashMap<String, String>, command: &String) -> u16 {
                 _ => {
                     panic!("3 parts but center is wrong: {:#?}", center);
                 }
-            }
+            };
+            graph.insert(command.to_string(), res.to_string());
+            return res;
         }
         _ => {
             panic!("wtf")
@@ -114,10 +124,11 @@ fn solve(graph: &HashMap<String, String>, command: &String) -> u16 {
 }
 
 fn solve_part1(input: &Vec<String>, target: String) -> u16 {
-    let graph = create_graph_as_hashmap(input);
+    let mut graph = create_graph_as_hashmap(input);
     assert_eq!(input.len(), graph.len());
 
-    solve(&graph, graph.get(&target).unwrap())
+    let target = graph.get(&target).unwrap().clone();
+    solve(&mut graph, &target)
 }
 
 fn main() {
